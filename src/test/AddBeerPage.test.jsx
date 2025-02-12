@@ -5,6 +5,7 @@ import nock from "nock";
 import axios from "axios";
 import AddBeerPage from "../pages/AddBeerPage";
 
+
 const API_URL = "https://ih-beers-api2.herokuapp.com";
 
 axios.defaults.adapter = "http";

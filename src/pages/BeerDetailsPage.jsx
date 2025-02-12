@@ -1,24 +1,41 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import beersJSON from "./../assets/beers.json";
-
+// src/pages/BeerDetailsPage.jsx
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
 function BeerDetailsPage() {
-  // Mock initial state, to be replaced by data from the Beers API. Store the beer info retrieved from the Beers API in this state variable.
-  const [beer, setBeer] = useState(beersJSON[0]);
+  // State to store the beer data and error message
+  const [beer, setBeer] = useState(null);
+  const [error, setError] = useState(null);
 
-  // React Router hook for navigation. We use it for the back button. You can leave this as it is.
   const navigate = useNavigate();
 
+  // Get the beerId from the URL parameters
+  const { beerId } = useParams();
 
+  // Fetch the beer details when the component mounts or the beerId changes
+  useEffect(() => {
+    // Fetch beer details using the beerId
+    axios
+      .get(`https://ih-beers-api2.herokuapp.com/beers/${beerId}`)
+      .then((response) => {
+        setBeer(response.data); // Store the beer data in the state
+      })
+      .catch((error) => {
+        setError("Error fetching beer details. Please try again later.");
+        console.error("Error fetching beer details:", error);
+      });
+  }, [beerId]); // The effect will run again if the beerId changes
 
-  // TASKS:
-  // 1. Get the beer ID from the URL, using the useParams hook.
-  // 2. Set up an effect hook to make a request for the beer info from the Beers API.
-  // 3. Use axios to make a HTTP request.
-  // 4. Use the response data from the Beers API to update the state variable.
+  // Display error if fetching failed
+  if (error) {
+    return <div className="alert alert-danger">{error}</div>;
+  }
 
-
+  // Show loading message if beer data is not loaded yet
+  if (!beer) {
+    return <div>Loading beer details...</div>;
+  }
 
   // Structure and the content of the page showing the beer details. You can leave this as it is:
   return (
@@ -51,4 +68,6 @@ function BeerDetailsPage() {
   );
 }
 
+
 export default BeerDetailsPage;
+
